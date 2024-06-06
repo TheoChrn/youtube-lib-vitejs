@@ -16,3 +16,19 @@
    ```js
    VITE_YOUTUBE_API_KEY="YOUR_API_KEY"
    ```
+5. Allow cors origin in `.\backend\src\index.ts`
+   ```js
+   app.use(
+     cors({
+       origin: "Add application origin",
+     })
+   );
+   ```
+6. Run the server in `cd .\backend\`
+   ```sh
+   npm run dev
+   ```
+7. Start the application in root folder
+   ```sh
+   npm run dev || npm run build && npm run preview
+   ```
