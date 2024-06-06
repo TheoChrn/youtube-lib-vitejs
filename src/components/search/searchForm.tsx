@@ -51,6 +51,7 @@ const SearchForm = ({
         className="py-4 border-0 h-full bg-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
       />
       <Button type="submit" className="py-4 pr-8 border-0 bg-transparent">
+        <span className="sr-only">Rechercher</span>
         <SearchIcon className="text-gray-300" />
       </Button>
     </form>

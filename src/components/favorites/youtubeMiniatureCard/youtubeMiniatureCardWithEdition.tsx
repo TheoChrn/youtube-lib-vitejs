@@ -80,6 +80,7 @@ const YoutubeMiniatureCardWithEdition = (
           className="absolute hover:scale-110 duration-200 right-5 top-1 bg-transparent pl-0"
           onClick={() => handleEditionButtonClick()}
         >
+          <span className="sr-only">Edit button</span>
           <RenderTitleEditionButton
             isPending={isPending}
             isEditing={isEditing}
