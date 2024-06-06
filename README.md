@@ -1,12 +1,5 @@
 <!-- ABOUT THE PROJECT -->
-## About The Project
-
-Youtube Library
-
-### Built With
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
+## Youtube Library
 <!-- GETTING STARTED -->
 ## Getting Started
 
