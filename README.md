@@ -14,5 +14,5 @@
    ```
 4. Enter your API in `.env`
    ```js
-   VITE_YOUTUBE_API_KEY="YOUT_API_KEY"
+   VITE_YOUTUBE_API_KEY="YOUR_API_KEY"
    ```
