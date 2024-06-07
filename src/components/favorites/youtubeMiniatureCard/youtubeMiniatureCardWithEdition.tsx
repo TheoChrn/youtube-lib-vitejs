@@ -1,13 +1,15 @@
 import { Button } from "@/components/ui/button";
 import UseRetrieveUserData from "@/hooks/useGetUserDataFromCache";
-import { updateVideoTitle } from "@/services/userService";
 import { User, Video } from "@/types/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
+import { FavoritesThumbNailController } from "../../../controllers/favoritesThumbnailController";
 import { FavoriteSectionProps } from "../favoritesSection";
+import DeleteButton from "./deleteButton";
 import RenderTitleEditionButton from "./renderTitleEditionButton";
 import YoutubeMiniatureImg from "./youtubeMiniatureImg";
+import { VideoThumbNailModel } from "@/models/videoThumbnailModel";
 
 interface YoutubeMiniatureCardWithEditionProps extends FavoriteSectionProps {
   video: Video;
@@ -16,20 +18,26 @@ interface YoutubeMiniatureCardWithEditionProps extends FavoriteSectionProps {
 const YoutubeMiniatureCardWithEdition = (
   props: YoutubeMiniatureCardWithEditionProps
 ) => {
+  const queryClient = useQueryClient();
   const { video } = props;
   const [isEditing, setIsEditing] = useState(false);
   const [editingValue, setEditingValue] = useState(video.title);
-  const queryClient = useQueryClient();
 
   const user = UseRetrieveUserData();
 
-  const { mutate, isPending, isSuccess, data } = useMutation({
+  const videoModel = new VideoThumbNailModel(video.id, video.title);
+
+  const updateMutation = useMutation({
     mutationFn: (data: {
       userName: User["name"];
       videoId: Video["id"];
       newTitle: Video["title"];
     }) => {
-      return updateVideoTitle(data.userName, data.videoId, data.newTitle);
+      return FavoritesThumbNailController.updateVideoTitleInFavorites(
+        data.userName,
+        data.videoId,
+        data.newTitle
+      );
     },
     onError: () => {
       toast.error("Failed to update title");
@@ -61,47 +69,57 @@ const YoutubeMiniatureCardWithEdition = (
       return;
     }
     if (isEditing) {
-      mutate({
-        userName: user.name,
-        videoId: video.id,
-        newTitle: editingValue,
-      });
+      updateMutation.mutate(
+        {
+          userName: user.name,
+          videoId: video.id,
+          newTitle: editingValue,
+        },
+        {
+          onSuccess: (data) => {
+            setEditingValue(data.responseData?.data ?? video.title);
+          },
+        }
+      );
     }
   };
 
   return (
     <figure className="flex flex-col font-bold aspect-video gap-y-2 px-2 first:pl-0 last:pr-0">
       <YoutubeMiniatureImg
-        videoId={video.id}
-        handleClick={() => handleMiniatureClick()}
+        alt={video.title}
+        src={videoModel.getThumbnailUrl()}
+        onClick={() => handleMiniatureClick()}
       />
-      <figcaption className="relative flex flex-row  justify-between items-center">
+      <figcaption className="relative flex flex-row  items-start">
+        <DeleteButton videoId={video.id} />
         <Button
           className="absolute hover:scale-110 duration-200 right-5 top-1 bg-transparent pl-0"
           onClick={() => handleEditionButtonClick()}
         >
           <span className="sr-only">Edit button</span>
           <RenderTitleEditionButton
-            isPending={isPending}
+            isPending={updateMutation.isPending}
             isEditing={isEditing}
           />
         </Button>
         {isEditing ? (
           <textarea
-            className="w-full "
+            className="w-full max-w-[80%]"
             value={editingValue}
             onChange={(e) => setEditingValue(e.target.value)}
+            maxLength={100}
           />
         ) : (
           <p
             className={`${
-              isPending ? "text-gray-400" : "text-foreground"
+              updateMutation.isPending ? "text-gray-400" : "text-foreground"
             } textEllipsisAfter2`}
           >
-            {isPending
+            {updateMutation.isPending
               ? editingValue
-              : isSuccess
-              ? data.responseData?.data
+              : updateMutation.isSuccess
+              ? updateMutation.data.responseData?.data
               : video.title}
           </p>
         )}

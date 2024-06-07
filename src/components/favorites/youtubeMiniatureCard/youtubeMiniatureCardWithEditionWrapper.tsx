@@ -11,7 +11,7 @@ const YoutubeMiniatureCardWithEditionWrapper = (
   props: YoutubeMiniatureCardWithEditionWrapperProps
 ) => {
   return (
-    <ul className="flex gap-y-16 gap-x-8 overflow-auto lg:flex-col">
+    <ul className="flex gap-y-16 gap-x-8 overflow-auto lg:flex-col h-full">
       {props.userVideos.map((video) => (
         <li
           key={video.id}

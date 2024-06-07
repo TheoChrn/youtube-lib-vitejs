@@ -2,15 +2,15 @@ import useAddVideo from "@/hooks/useAddVideo";
 import UseRetrieveUserData from "@/hooks/useGetUserDataFromCache";
 import { checkEmptyValues } from "@/lib/utils";
 import { Video } from "@/types/types";
+import { ArrowLeft } from "lucide-react";
 import React from "react";
 import { Button } from "../ui/button";
-import YoutubeMiniatureCardWithEditionWrapper from "./youtubeMiniatureCard/youtubeMiniatureCardWithEditionWrapper";
 import { NavLink } from "../ui/navlink";
-import { ArrowLeft } from "lucide-react";
+import YoutubeMiniatureCardWithEditionWrapper from "./youtubeMiniatureCard/youtubeMiniatureCardWithEditionWrapper";
 
 export interface FavoriteSectionProps {
   setIsSearching: (value: React.SetStateAction<boolean>) => void;
-  setCurrentVideo: (value: React.SetStateAction<Video>) => void;
+  setCurrentVideo: (value: React.SetStateAction<Video | null>) => void;
 }
 
 const FavoritesSection = (props: FavoriteSectionProps) => {
@@ -34,14 +34,14 @@ const FavoritesSection = (props: FavoriteSectionProps) => {
     <section
       onDrop={(e) => handleOnDrop(e)}
       onDragOver={(e) => e.preventDefault()}
-      className="grid grid-row-3 gap-y-6 h-auto items-center lg:flex lg:flex-col overflow-auto lg:pr-6 lg:flex-auto"
+      className="grid grid-row-3 gap-y-6 h-full items-center lg:flex lg:flex-col overflow-x-auto lg:overflow-y-auto lg:pr-6 lg:flex-auto"
     >
-      <h3 className="w-full text-center text-3xl">
+      <h2 className="w-full text-center text-3xl">
         Favoris de{" "}
         <span className="text-accent first-letter:uppercase">
           <span className="">{user.name}</span>
         </span>
-      </h3>
+      </h2>
       <div className="flex items-center gap-6">
         <NavLink
           variant={"youtube"}

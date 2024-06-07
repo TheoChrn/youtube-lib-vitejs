@@ -1,28 +1,12 @@
 import FavoritesSection from "@/components/favorites/favoritesSection";
 import SearchSection from "@/components/search/searchSection";
 import EmbedYoutubeVideo from "@/components/youtubeEmbed/EmbedYoutubeVideo";
-import { userLoader } from "@/loaders/loaders";
-import { fetchUserByName } from "@/services/userService";
-import { User } from "@/types/types";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { userDataQuery, userLoader } from "@/loaders/loaders";
+import { User, Video } from "@/types/types";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import { Toaster } from "sonner";
-
-export const userDataQuery = (userName: User["name"]) =>
-  queryOptions({
-    queryKey: ["user", userName],
-    queryFn: async () => {
-      const user = await fetchUserByName(userName);
-      if (!user) {
-        throw new Response("", {
-          status: 404,
-          statusText: "Not Found",
-        });
-      }
-      return user;
-    },
-  });
 
 const UserPage = () => {
   const { userName } = useLoaderData() as Awaited<
@@ -34,7 +18,17 @@ const UserPage = () => {
   };
 
   const [isSearching, setIsSearching] = useState(false);
-  const [currentVideo, setCurrentVideo] = useState(user.videos[0] ?? null);
+  const [currentVideo, setCurrentVideo] = useState<Video | null>(
+    user.videos[0] ?? null
+  );
+
+  useEffect(() => {
+    setCurrentVideo(user.videos[0]);
+
+    return () => {
+      setCurrentVideo(null);
+    };
+  }, [user]);
 
   return (
     <main className="relative flex flex-col p-5 items-center justify-center max-w-screen-2xl mx-auto">

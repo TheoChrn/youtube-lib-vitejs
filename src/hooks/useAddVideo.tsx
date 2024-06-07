@@ -1,15 +1,17 @@
-import { addVideo } from "@/services/userService";
+import { VideoThumbNailController } from "@/controllers/videoThumbnailController";
 import { User, Video } from "@/types/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-
 
 const useAddVideo = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: (data: { userName: User["name"]; newVideo: Video }) => {
-      return addVideo(data.userName, data.newVideo);
+      return VideoThumbNailController.addVideoToFavorites(
+        data.userName,
+        data.newVideo
+      );
     },
     onError: (error) => {
       toast.error(error.message, { id: "addVideo" });

@@ -169,4 +169,60 @@ router.post("/api/user/:name/videos/:id", (req: Request, res: Response) => {
   });
 });
 
+router.delete("/api/user/:name/videos/:id", (req: Request, res: Response) => {
+  const userName = req.params.name.toLowerCase();
+  const videoId = req.params.id;
+
+  fs.readFile(dbPath, "utf8", (err, data) => {
+    if (err) {
+      return res.status(500).json({ message: "Error reading users file" });
+    }
+
+    try {
+      const parsedData = JSON.parse(data);
+
+      if (!Array.isArray(parsedData.users)) {
+        res.status(500).json({ message: "Unexpected JSON structure" });
+        return;
+      }
+
+      const users: User[] = parsedData.users;
+
+      const userIndex = users.findIndex(
+        (user) => user.name.toLowerCase() === userName
+      );
+
+      if (userIndex !== -1) {
+        const videoIndex = users[userIndex].videos.findIndex(
+          (video) => video.id === videoId
+        );
+
+        if (videoIndex === -1) {
+          res.status(404).json({ message: "Video not found" });
+          return;
+        }
+
+        users[userIndex].videos.splice(videoIndex, 1);
+
+        fs.writeFile(
+          dbPath,
+          JSON.stringify({ users: users }, null, 2),
+          (err) => {
+            if (err) {
+              return res
+                .status(500)
+                .json({ message: "Error writing to users file" });
+            }
+            res.status(200).json({ message: "Video deleted successfully" });
+          }
+        );
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    } catch (parseError) {
+      res.status(500).json({ message: "Error parsing JSON data" });
+    }
+  });
+});
+
 export default router;
